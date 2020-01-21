@@ -7,8 +7,13 @@ We'll be collecting data from a [Plastmatronic](http://www.plasmatronics.com.au/
 
 There are a bunch of manuals which are going to be useful. We're linking to them here for easy reference:
 
+PL80:
+
 - [PL60/PL80 User Guide](http://www.plasmatronics.com.au/downloads/PL60.PL80.UserGuide.V6.pdf)
 - [PL User Manual](http://www.plasmatronics.com.au/downloads/PLUserMan.V9.0324.pdf)
-- [PLI](http://www.plasmatronics.com.au/downloads/PLIman4.2.pdf)
 - [PL Reference Manual](http://www.plasmatronics.com.au/downloads/PL_Reference_Manual_6.3.1.pdf)
+
+PLI:
+
+- [PLI](http://www.plasmatronics.com.au/downloads/PLIman4.2.pdf)
 - [PLI Communications](http://www.plasmatronics.com.au/downloads/PLI.Info.2.16.pdf)
