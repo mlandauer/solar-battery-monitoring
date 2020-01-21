@@ -17,3 +17,13 @@ PLI:
 
 - [PLI](http://www.plasmatronics.com.au/downloads/PLIman4.2.pdf)
 - [PLI Communications](http://www.plasmatronics.com.au/downloads/PLI.Info.2.16.pdf)
+
+Other bits of software and hardware that we might want to use:
+
+- [Raspberry Pi](https://www.raspberrypi.org/)
+- [Go](https://golang.org/)
+- [Go serial port library](https://github.com/jacobsa/go-serial)
+- [Python PLI code](https://github.com/jeremyvisser/pli) useful as reference.
+- [InfluxDB](https://www.influxdata.com/) for storing data
+- [Grafana](https://grafana.com/) for prototyping the visualisation of the data in InfluxDB
+- [OpenBalena](https://www.balena.io/open/) for managing the software on the Raspberry PI using Docker.
