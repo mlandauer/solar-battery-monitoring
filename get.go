@@ -41,7 +41,7 @@ func main() {
 }
 
 func loopbackTest(port io.ReadWriter) error {
-	_, err := port.Write([]byte{187, 0, 0, 68})
+	_, err := port.Write(loopbackTestCommand())
 	if err != nil {
 		return err
 	}
@@ -58,4 +58,8 @@ func loopbackTest(port io.ReadWriter) error {
 		return errors.New("Expected return value of 128")
 	}
 	return nil
+}
+
+func loopbackTestCommand() []byte {
+	return []byte{187, 0, 0, 68}
 }
