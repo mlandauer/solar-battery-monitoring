@@ -60,17 +60,13 @@ func loopbackTest(port io.ReadWriter) error {
 	return nil
 }
 
-func writeLoopbackTest(port io.Writer) error {
-	_, err := port.Write(loopbackTestCommand())
-	return err
-}
-
 const commandLoopback byte = 187
 
-func loopbackTestCommand() []byte {
-	return commandBytes(commandLoopback, 0, 0)
+func writeLoopbackTest(port io.Writer) error {
+	return writeCommand(port, commandLoopback, 0, 0)
 }
 
-func commandBytes(command byte, address byte, value byte) []byte {
-	return []byte{command, address, value, 255 - command}
+func writeCommand(port io.Writer, command byte, address byte, value byte) error {
+	_, err := port.Write([]byte{command, address, value, 255 - command})
+	return err
 }
