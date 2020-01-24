@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"io"
 	"log"
 
 	"github.com/jacobsa/go-serial/serial"
@@ -31,22 +33,29 @@ func main() {
 	// Make sure to close it later.
 	defer port.Close()
 
-	// Send loopback test command
-	_, err = port.Write([]byte{187, 0, 0, 68})
+	err = loopbackTest(port)
 	if err != nil {
 		log.Fatal(err)
+	}
+	log.Println("Loopback test finished")
+}
+
+func loopbackTest(port io.ReadWriter) error {
+	_, err := port.Write([]byte{187, 0, 0, 68})
+	if err != nil {
+		return err
 	}
 	// Expect to receive one by with a value of 128
 	buf := make([]byte, 2)
 	n, err := port.Read(buf)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	if n != 1 {
-		log.Fatal("Only expected one byte")
+		return errors.New("Only expected one byte")
 	}
 	if buf[0] != 128 {
-		log.Fatal("Expected return value of 128")
+		return errors.New("Expected return value of 128")
 	}
-	log.Println("Loopback test finished")
+	return nil
 }
