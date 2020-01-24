@@ -60,6 +60,12 @@ func loopbackTest(port io.ReadWriter) error {
 	return nil
 }
 
+const commandLoopback byte = 187
+
 func loopbackTestCommand() []byte {
-	return []byte{187, 0, 0, 68}
+	return commandBytes(commandLoopback, 0, 0)
+}
+
+func commandBytes(command byte, address byte, value byte) []byte {
+	return []byte{command, address, value, 255 - command}
 }
