@@ -9,7 +9,7 @@ import (
 
 func TestWriteLoopbackTest(t *testing.T) {
 	var buffer bytes.Buffer
-	err := writeLoopbackTest(&buffer)
+	err := commandLoopbackTest(&buffer)
 	assert.Nil(t, err)
 	assert.Equal(t, []byte{187, 0, 0, 68}, buffer.Bytes())
 }

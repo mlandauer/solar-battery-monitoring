@@ -40,7 +40,7 @@ func main() {
 	log.Println("Loopback test finished")
 
 	// Now let's get the PL software version
-	err = writeCommand(port, commandReadRAM, 0, 0)
+	err = command(port, 20, 0, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func main() {
 }
 
 func loopbackTest(port io.ReadWriter) error {
-	err := writeLoopbackTest(port)
+	err := commandLoopbackTest(port)
 	if err != nil {
 		return err
 	}
@@ -93,18 +93,11 @@ func loopbackTest(port io.ReadWriter) error {
 	return nil
 }
 
-// This is not the full list of actual commands. We're not including any commands that write
-// We're doing this just for safety sake
-const commandReadRAM byte = 20
-
-// const commandReadEeprom byte = 72
-const commandLoopback byte = 187
-
-func writeLoopbackTest(port io.Writer) error {
-	return writeCommand(port, commandLoopback, 0, 0)
+func commandLoopbackTest(port io.Writer) error {
+	return command(port, 187, 0, 0)
 }
 
-func writeCommand(port io.Writer, command byte, address byte, value byte) error {
+func command(port io.Writer, command byte, address byte, value byte) error {
 	_, err := port.Write([]byte{command, address, value, 255 - command})
 	return err
 }
