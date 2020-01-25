@@ -9,13 +9,35 @@ import (
 )
 
 func main() {
+	// TODO: Don't yet know how we easily get the port name for the device
+	pli, err := NewPLI("/dev/tty.usbserial-A8008HlV")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Make sure to close it later.
+	defer pli.Close()
+
+	err = loopbackTest(pli.Port)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Loopback test finished")
+
+	// Now let's get the PL software version
+	value, err := readRAM(pli.Port, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("PL Software version", value)
+}
+
+func NewPLI(portName string) (PLI, error) {
 	// Set up options.
 	// 8 bit, No parity, 1 stop bit is what the PLI expects
 	// 9600 baud is the fastest speed the PLI can work at. That baud rate needs to be setup
 	// with DIP switches on the PLI circuitboard itself. This is like a little glimpse into the past.
 	options := serial.OpenOptions{
-		// TODO: Don't know how we easily get the device
-		PortName:   "/dev/tty.usbserial-A8008HlV",
+		PortName:   portName,
 		BaudRate:   9600,
 		DataBits:   8,
 		StopBits:   1,
@@ -26,25 +48,16 @@ func main() {
 
 	// Open the port.
 	port, err := serial.Open(options)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return PLI{Port: port}, err
+}
 
-	// Make sure to close it later.
-	defer port.Close()
+// PLI is used to talk to a particular PLI
+type PLI struct {
+	Port io.ReadWriteCloser
+}
 
-	err = loopbackTest(port)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Loopback test finished")
-
-	// Now let's get the PL software version
-	value, err := readRAM(port, 0)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("PL Software version", value)
+func (pli *PLI) Close() error {
+	return pli.Port.Close()
 }
 
 func readRAM(port io.ReadWriter, address byte) (byte, error) {
