@@ -44,32 +44,58 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	value, err := readResponse(port)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("PL Software version", value)
+}
+
+// All one byte responses we consider errors (even loopback response)
+func readResponse(port io.Reader) (byte, error) {
 	buf := make([]byte, 2)
 	n, err := port.Read(buf)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 	if n == 1 {
 		if buf[0] == 200 {
 			// We expect another byte
 			n, err = port.Read(buf)
 			if err != nil {
-				log.Fatal(err)
+				return 0, err
 			}
 			if n != 1 {
-				log.Fatal("Expected another byte")
+				return 0, errors.New("Expected another byte")
 			}
-			log.Println("PL Software version", buf[0])
+			return buf[0], nil
 		} else {
-			log.Fatalf("Error code %v while getting PL software version", buf[0])
+			switch buf[0] {
+			case 5:
+				return 0, errors.New("PLI Error: No comms or corrupt comms")
+			case 128:
+				return 0, errors.New("PLI Error: Loopback response code")
+			case 129:
+				return 0, errors.New("PLI Error: Timeout Error")
+			case 130:
+				return 0, errors.New("PLI Error: Checksum error in PLI receive data")
+			case 131:
+				return 0, errors.New("PLI Error: Command received by PLI is not recognised")
+			case 133:
+				return 0, errors.New("PLI Error: Processor did not receive a reply to request")
+			case 134:
+				return 0, errors.New("PLI Error: Error in reply from PL")
+			default:
+				return 0, errors.New("PLI Error: Unknown error code")
+			}
 		}
 	} else if n == 2 {
 		if buf[0] != 200 {
-			log.Fatal("Received one byte more than expected")
+			return 0, errors.New("Received one byte more than expected")
 		}
-		log.Println("PL Software version", buf[1])
+		return buf[1], nil
 	} else {
-		log.Fatal("Unexpected number of bytes")
+		return 0, errors.New("Unexpected number of bytes")
 	}
 }
 
