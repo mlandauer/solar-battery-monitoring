@@ -40,15 +40,19 @@ func main() {
 	log.Println("Loopback test finished")
 
 	// Now let's get the PL software version
-	err = commandReadRAM(port, 0)
-	if err != nil {
-		log.Fatal(err)
-	}
-	value, err := readResponse(port)
+	value, err := readRAM(port, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("PL Software version", value)
+}
+
+func readRAM(port io.ReadWriter, address byte) (byte, error) {
+	err := commandReadRAM(port, address)
+	if err != nil {
+		return 0, err
+	}
+	return readResponse(port)
 }
 
 var ErrLoopbackResponse = errors.New("PLI Error: Loopback response code")
