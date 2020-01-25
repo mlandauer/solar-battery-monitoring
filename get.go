@@ -38,6 +38,39 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("Loopback test finished")
+
+	// Now let's get the PL software version
+	err = writeCommand(port, commandReadRAM, 0, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	buf := make([]byte, 2)
+	n, err := port.Read(buf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if n == 1 {
+		if buf[0] == 200 {
+			// We expect another byte
+			n, err = port.Read(buf)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if n != 1 {
+				log.Fatal("Expected another byte")
+			}
+			log.Println("PL Software version", buf[0])
+		} else {
+			log.Fatalf("Error code %v while getting PL software version", buf[0])
+		}
+	} else if n == 2 {
+		if buf[0] != 200 {
+			log.Fatal("Received one byte more than expected")
+		}
+		log.Println("PL Software version", buf[1])
+	} else {
+		log.Fatal("Unexpected number of bytes")
+	}
 }
 
 func loopbackTest(port io.ReadWriter) error {
@@ -60,6 +93,11 @@ func loopbackTest(port io.ReadWriter) error {
 	return nil
 }
 
+// This is not the full list of actual commands. We're not including any commands that write
+// We're doing this just for safety sake
+const commandReadRAM byte = 20
+
+// const commandReadEeprom byte = 72
 const commandLoopback byte = 187
 
 func writeLoopbackTest(port io.Writer) error {
