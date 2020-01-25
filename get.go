@@ -40,7 +40,7 @@ func main() {
 	log.Println("Loopback test finished")
 
 	// Now let's get the PL software version
-	err = command(port, 20, 0, 0)
+	err = commandReadRAM(port, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,6 +93,9 @@ func loopbackTest(port io.ReadWriter) error {
 	return nil
 }
 
+func commandReadRAM(port io.Writer, address byte) error {
+	return command(port, 20, address, 0)
+}
 func commandLoopbackTest(port io.Writer) error {
 	return command(port, 187, 0, 0)
 }
