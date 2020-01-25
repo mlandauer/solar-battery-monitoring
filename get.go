@@ -51,6 +51,8 @@ func main() {
 	log.Println("PL Software version", value)
 }
 
+var ErrLoopbackResponse = errors.New("PLI Error: Loopback response code")
+
 // All one byte responses we consider errors (even loopback response)
 func readResponse(port io.Reader) (byte, error) {
 	buf := make([]byte, 2)
@@ -74,7 +76,7 @@ func readResponse(port io.Reader) (byte, error) {
 			case 5:
 				return 0, errors.New("PLI Error: No comms or corrupt comms")
 			case 128:
-				return 0, errors.New("PLI Error: Loopback response code")
+				return 0, ErrLoopbackResponse
 			case 129:
 				return 0, errors.New("PLI Error: Timeout Error")
 			case 130:
@@ -104,17 +106,12 @@ func loopbackTest(port io.ReadWriter) error {
 	if err != nil {
 		return err
 	}
-	// Expect to receive one by with a value of 128
-	buf := make([]byte, 2)
-	n, err := port.Read(buf)
-	if err != nil {
+	_, err = readResponse(port)
+	if err == nil {
+		return errors.New("Expected one byte response")
+	}
+	if err != ErrLoopbackResponse {
 		return err
-	}
-	if n != 1 {
-		return errors.New("Only expected one byte")
-	}
-	if buf[0] != 128 {
-		return errors.New("Expected return value of 128")
 	}
 	return nil
 }
