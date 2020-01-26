@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// TODO: Don't yet know how we easily get the port name for the device
-	pli, err := NewPLI("/dev/tty.usbserial-A8008HlV")
+	pli, err := NewPLI("/dev/tty.usbserial-A8008HlV", 24)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,9 +29,26 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("PL Software version", value)
+
+	v, err := pli.BatteryVoltage()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Battery voltage", v)
 }
 
-func NewPLI(portName string) (PLI, error) {
+
+func (pli *PLI) BatteryVoltage() (float32, error) {
+	b, err := pli.readRAM(50)
+	value := float32(b) * 0.1 * float32(pli.Voltage) / 12
+	return value, err
+}
+
+func NewPLI(portName string, voltage int) (PLI, error) {
+	if voltage != 12 && voltage != 24 && voltage != 48 {
+		return PLI{}, errors.New("Voltage expected to be 12, 24 or 48")
+	}
+
 	// Set up options.
 	// 8 bit, No parity, 1 stop bit is what the PLI expects
 	// 9600 baud is the fastest speed the PLI can work at. That baud rate needs to be setup
@@ -48,12 +65,13 @@ func NewPLI(portName string) (PLI, error) {
 
 	// Open the port.
 	port, err := serial.Open(options)
-	return PLI{Port: port}, err
+	return PLI{Port: port, Voltage: voltage}, err
 }
 
 // PLI is used to talk to a particular PLI
 type PLI struct {
-	Port io.ReadWriteCloser
+	Port    io.ReadWriteCloser
+	Voltage int // Voltage of battery system (12, 24 or 48)
 }
 
 func (pli *PLI) Close() error {
