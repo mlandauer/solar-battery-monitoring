@@ -13,10 +13,12 @@ type PLI struct {
 	Voltage int // Voltage of battery system (12, 24 or 48)
 }
 
-func New(portName string, voltage int) (PLI, error) {
+func New(portName string, voltage int) (pli PLI, err error) {
 	if voltage != 12 && voltage != 24 && voltage != 48 {
-		return PLI{}, errors.New("Voltage expected to be 12, 24 or 48")
+		err = errors.New("Voltage expected to be 12, 24 or 48")
+		return
 	}
+	pli.Voltage = voltage
 
 	// Set up options.
 	// 8 bit, No parity, 1 stop bit is what the PLI expects
@@ -34,7 +36,8 @@ func New(portName string, voltage int) (PLI, error) {
 
 	// Open the port.
 	port, err := serial.Open(options)
-	return PLI{Port: port, Voltage: voltage}, err
+	pli.Port = port
+	return
 }
 
 func (pli *PLI) Close() error {
