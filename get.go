@@ -17,14 +17,14 @@ func main() {
 	// Make sure to close it later.
 	defer pli.Close()
 
-	err = loopbackTest(pli.Port)
+	err = pli.loopbackTest()
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Loopback test finished")
 
 	// Now let's get the PL software version
-	value, err := readRAM(pli.Port, 0)
+	value, err := pli.readRAM(0)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,12 +60,12 @@ func (pli *PLI) Close() error {
 	return pli.Port.Close()
 }
 
-func readRAM(port io.ReadWriter, address byte) (byte, error) {
-	err := commandReadRAM(port, address)
+func (pli *PLI) readRAM(address byte) (byte, error) {
+	err := commandReadRAM(pli.Port, address)
 	if err != nil {
 		return 0, err
 	}
-	return readResponse(port)
+	return readResponse(pli.Port)
 }
 
 var ErrLoopbackResponse = errors.New("PLI Error: Loopback response code")
@@ -118,12 +118,12 @@ func readResponse(port io.Reader) (byte, error) {
 	}
 }
 
-func loopbackTest(port io.ReadWriter) error {
-	err := commandLoopbackTest(port)
+func (pli *PLI) loopbackTest() error {
+	err := commandLoopbackTest(pli.Port)
 	if err != nil {
 		return err
 	}
-	_, err = readResponse(port)
+	_, err = readResponse(pli.Port)
 	if err == nil {
 		return errors.New("Expected one byte response")
 	}
