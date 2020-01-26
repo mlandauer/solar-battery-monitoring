@@ -85,6 +85,38 @@ func (pli *PLI) Close() error {
 // Reading the solar voltage is complicated because the charging needs to be stopped and the
 // display activated to get an accurate reading
 
+// Gets the overall PL program number and the system voltage
+func (pli *PLI) Volt() (prog int, voltage int, err error) {
+	v, err := pli.ReadRAM(93)
+	progByte, voltByte := extractNibbles(v)
+	if progByte > 4 {
+		err = errors.New("Expected program number to be in the range 0-4")
+		return
+	}
+	prog = int(progByte)
+	switch voltByte {
+	case 0:
+		voltage = 12
+	case 1:
+		voltage = 24
+	case 2:
+		voltage = 32
+	case 3:
+		voltage = 36
+	case 4:
+		voltage = 48
+	default:
+		err = errors.New("Unexpected voltage value returned by PLI")
+	}
+	return
+}
+
+func extractNibbles(value byte) (msn byte, lsn byte) {
+	msn = (value & 0xf0) >> 4 // most significant nibble
+	lsn = value & 0xf         // least significant nibble
+	return
+}
+
 func (pli *PLI) BatteryVoltage() (float32, error) {
 	b, err := pli.ReadRAM(50)
 	value := float32(b) * 0.1 * float32(pli.Voltage) / 12
