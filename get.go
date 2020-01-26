@@ -15,12 +15,6 @@ func main() {
 	// Make sure to close it later.
 	defer pli.Close()
 
-	err = pli.LoopbackTest()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Loopback test finished")
-
 	// Now let's get the PL software version
 	value, err := pli.ReadRAM(0)
 	if err != nil {

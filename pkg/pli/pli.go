@@ -3,6 +3,7 @@ package pli
 import (
 	"errors"
 	"io"
+	"log"
 
 	"github.com/jacobsa/go-serial/serial"
 )
@@ -37,6 +38,13 @@ func New(portName string, voltage int) (pli PLI, err error) {
 	// Open the port.
 	port, err := serial.Open(options)
 	pli.Port = port
+	if err != nil {
+		return
+	}
+
+	log.Println("Doing a loopback test to make sure that communication channels are all working...")
+	err = pli.LoopbackTest()
+
 	return
 }
 
