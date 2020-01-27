@@ -12,7 +12,7 @@ import (
 type PLI struct {
 	Port    io.ReadWriteCloser
 	Prog    int // System program
-	Voltage int // Voltage of battery system (12, 24 or 48)
+	Voltage int // Voltage of battery system
 }
 
 func New(portName string) (pli PLI, err error) {
