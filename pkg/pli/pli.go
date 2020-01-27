@@ -11,16 +11,11 @@ import (
 // PLI is used to talk to a particular PLI
 type PLI struct {
 	Port    io.ReadWriteCloser
+	Prog    int // System program
 	Voltage int // Voltage of battery system (12, 24 or 48)
 }
 
-func New(portName string, voltage int) (pli PLI, err error) {
-	if voltage != 12 && voltage != 24 && voltage != 48 {
-		err = errors.New("Voltage expected to be 12, 24 or 48")
-		return
-	}
-	pli.Voltage = voltage
-
+func New(portName string) (pli PLI, err error) {
 	// Set up options.
 	// 8 bit, No parity, 1 stop bit is what the PLI expects
 	// 9600 baud is the fastest speed the PLI can work at. That baud rate needs to be setup
@@ -44,6 +39,15 @@ func New(portName string, voltage int) (pli PLI, err error) {
 
 	log.Println("Doing a loopback test to make sure that communication channels are all working...")
 	err = pli.LoopbackTest()
+	if err != nil {
+		return
+	}
+
+	// Now get the system voltage (because we need that later to scale some readings)
+	log.Println("Getting the system voltage...")
+	prog, voltage, err := pli.Volt()
+	pli.Prog = prog
+	pli.Voltage = voltage
 
 	return
 }

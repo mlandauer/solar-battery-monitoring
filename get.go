@@ -8,20 +8,15 @@ import (
 
 func main() {
 	// TODO: Don't yet know how we easily get the port name for the device
-	pli, err := pli.New("/dev/tty.usbserial-A8008HlV", 24)
+	pli, err := pli.New("/dev/tty.usbserial-A8008HlV")
 	if err != nil {
 		log.Fatal(err)
 	}
 	// Make sure to close it later.
 	defer pli.Close()
 
-	// Get the system voltage
-	prog, volt, err := pli.Volt()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("System program number", prog)
-	log.Println("System voltage, ", volt)
+	log.Println("System program number", pli.Prog)
+	log.Println("System voltage, ", pli.Voltage)
 
 	// Now let's get the PL software version
 	value, err := pli.ReadRAM(0)
