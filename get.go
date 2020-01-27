@@ -19,6 +19,7 @@ func main() {
 	log.Println("System voltage, ", pli.Voltage)
 
 	// Now let's get the PL software version
+	// TODO: Get PL model number out of this and extract method
 	value, err := pli.ReadRAM(0)
 	if err != nil {
 		log.Fatal(err)
@@ -30,4 +31,10 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("Battery voltage", v)
+
+	bc, err := pli.BatteryCapacity()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Batter capacity: %v Ah", bc)
 }

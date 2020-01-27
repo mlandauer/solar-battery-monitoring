@@ -89,6 +89,21 @@ func (pli *PLI) Close() error {
 // Reading the solar voltage is complicated because the charging needs to be stopped and the
 // display activated to get an accurate reading
 
+// BatterCapacity returns the capacity of the battery measured in Ah
+func (pli *PLI) BatteryCapacity() (int, error) {
+	b, err := pli.ReadRAM(94)
+	if err != nil {
+		return 0, err
+	}
+	// Battery capacity setting 20A/100A per step - 20A steps until 1000Ah, 100Ah steps >1000Ah
+	var value int
+	value = int(b) * 20
+	if value > 1000 {
+		value = 1000 + (value-1000)/20*100
+	}
+	return value, nil
+}
+
 // Gets the overall PL program number and the system voltage
 func (pli *PLI) volt() (prog int, voltage int, err error) {
 	v, err := pli.ReadRAM(93)
