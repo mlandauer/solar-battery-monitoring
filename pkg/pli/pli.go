@@ -38,14 +38,14 @@ func New(portName string) (pli PLI, err error) {
 	}
 
 	log.Println("Doing a loopback test to make sure that communication channels are all working...")
-	err = pli.LoopbackTest()
+	err = pli.loopbackTest()
 	if err != nil {
 		return
 	}
 
 	// Now get the system voltage (because we need that later to scale some readings)
 	log.Println("Getting the system voltage...")
-	prog, voltage, err := pli.Volt()
+	prog, voltage, err := pli.volt()
 	pli.Prog = prog
 	pli.Voltage = voltage
 
@@ -90,7 +90,7 @@ func (pli *PLI) Close() error {
 // display activated to get an accurate reading
 
 // Gets the overall PL program number and the system voltage
-func (pli *PLI) Volt() (prog int, voltage int, err error) {
+func (pli *PLI) volt() (prog int, voltage int, err error) {
 	v, err := pli.ReadRAM(93)
 	progByte, voltByte := extractNibbles(v)
 	if progByte > 4 {
@@ -185,7 +185,7 @@ func readResponse(port io.Reader) (byte, error) {
 	}
 }
 
-func (pli *PLI) LoopbackTest() error {
+func (pli *PLI) loopbackTest() error {
 	err := commandLoopbackTest(pli.Port)
 	if err != nil {
 		return err
