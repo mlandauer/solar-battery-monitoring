@@ -33,4 +33,11 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("Batter capacity: %v Ah", bc)
+
+	h, m, s, err := pli.Time()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Time: %v:%v:%v", h, m, s)
+
 }

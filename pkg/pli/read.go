@@ -1,12 +1,17 @@
 package pli
 
-import "errors"
+import (
+	"errors"
+)
 
 // Methods for reading values (at a high level) from the PLI
 
 // Potentially useful addresses to read from in RAM
 //
 // 0 - Software version number.The following applies (subject to change without notice):Version      0-127 = PL20Version  128-191 = PL40Version  192-210 = PL60Version  215-255 = PL80
+// sec - 46 - 2 seconds file, inc at 2 sec intervals
+// min - 47 - Minutes file  (Value range = 0-5). Used for 6 minute timer
+// hour - 48 - Current time (in 0.1 hrs steps ie. 6 minute intervals) Values = 0-23.9 Eg. 0=midnight, 100=10.0 hrs (10am), 145=14.5 hrs (2:30pm)
 // batv - 50 - Battery voltage in 0.1V steps scaled relative to 12V.eg. 128=12.8V, for 24V system 128*2=25.6V, for 48V system128*4=51.2V
 // solv - 53  - solar voltage msb
 // volt - 93 - msn= Prog number (0-4), lsn=system voltage (0-4)System voltage... 0=12V, 1=24V, 2=32V, 3=36V, 4=48VEg. 00110001 = 24V system running Prog 3.
@@ -51,6 +56,33 @@ func (pli *PLI) SoftwareVersion() (string, byte, error) {
 	} else {
 		return "PL80", value, nil
 	}
+}
+
+// Time returns the time (to the nearest 2 seconds) as stored in the PLI. This is used internally to
+// total things over the day. So, it's fairly important that it's roughly correct.
+func (pli *PLI) Time() (hour int, min int, sec int, err error) {
+	a, err := pli.ReadRAM(48) // 6 minute chunks
+	if err != nil {
+		return
+	}
+	b, err := pli.ReadRAM(47) // minute chunks (0-5)
+	if err != nil {
+		return
+	}
+	if b > 5 {
+		err = errors.New("Expected minute to be in the range 0-5")
+		return
+	}
+	c, err := pli.ReadRAM(46) // 2 second chunks
+	if err != nil {
+		return
+	}
+	sec = int(a)*6*60 + int(b)*60 + int(c)*2
+	min = sec / 60
+	sec = sec % 60
+	hour = min / 60
+	min = min % 60
+	return
 }
 
 // BatterCapacity returns the capacity of the battery measured in Ah
