@@ -89,6 +89,22 @@ func (pli *PLI) Close() error {
 // Reading the solar voltage is complicated because the charging needs to be stopped and the
 // display activated to get an accurate reading
 
+func (pli *PLI) SoftwareVersion() (string, byte, error) {
+	value, err := pli.ReadRAM(0)
+	if err != nil {
+		return "", value, err
+	}
+	if value < 128 {
+		return "PL20", value, nil
+	} else if value < 192 {
+		return "PL40", value, nil
+	} else if value < 211 {
+		return "PL60", value, nil
+	} else {
+		return "PL80", value, nil
+	}
+}
+
 // BatterCapacity returns the capacity of the battery measured in Ah
 func (pli *PLI) BatteryCapacity() (int, error) {
 	b, err := pli.ReadRAM(94)
