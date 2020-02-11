@@ -26,8 +26,8 @@ func New(portName string) (pli PLI, err error) {
 		DataBits:   8,
 		StopBits:   1,
 		ParityMode: serial.PARITY_NONE,
-		// Will wait at most 100ms for a new byte to arrive
-		InterCharacterTimeout: 100,
+		// Will wait at most 1s for a new byte to arrive
+		InterCharacterTimeout: 1000,
 	}
 
 	// Open the port.
