@@ -92,6 +92,12 @@ func (pli *PLI) Time() (hour int, min int, sec int, err error) {
 	return
 }
 
+func (pli *PLI) BatteryVoltage() (float32, error) {
+	b, err := pli.ReadRAM(50)
+	value := float32(b) * 0.1 * float32(pli.Voltage) / 12
+	return value, err
+}
+
 // BatterCapacity returns the capacity of the battery measured in Ah
 func (pli *PLI) BatteryCapacity() (int, error) {
 	b, err := pli.ReadRAM(94)
@@ -131,12 +137,6 @@ func (pli *PLI) volt() (prog int, voltage int, err error) {
 		err = errors.New("Unexpected voltage value returned by PLI")
 	}
 	return
-}
-
-func (pli *PLI) BatteryVoltage() (float32, error) {
-	b, err := pli.ReadRAM(50)
-	value := float32(b) * 0.1 * float32(pli.Voltage) / 12
-	return value, err
 }
 
 // StateOfCharge returns a number between 0 and 100 which is very very roughly a measure of
