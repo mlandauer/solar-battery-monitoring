@@ -7,19 +7,20 @@ import (
 // Methods for reading values (at a high level) from the PLI
 
 // Potentially useful addresses to read from in RAM
-//
+// Done:
 // 0 - Software version number.The following applies (subject to change without notice):Version      0-127 = PL20Version  128-191 = PL40Version  192-210 = PL60Version  215-255 = PL80
 // sec - 46 - 2 seconds file, inc at 2 sec intervals
 // min - 47 - Minutes file  (Value range = 0-5). Used for 6 minute timer
 // hour - 48 - Current time (in 0.1 hrs steps ie. 6 minute intervals) Values = 0-23.9 Eg. 0=midnight, 100=10.0 hrs (10am), 145=14.5 hrs (2:30pm)
 // batv - 50 - Battery voltage in 0.1V steps scaled relative to 12V.eg. 128=12.8V, for 24V system 128*2=25.6V, for 48V system128*4=51.2V
-// solv - 53  - solar voltage msb
 // volt - 93 - msn= Prog number (0-4), lsn=system voltage (0-4)System voltage... 0=12V, 1=24V, 2=32V, 3=36V, 4=48VEg. 00110001 = 24V system running Prog 3.
 // bcap - 94 - battery capacity in 20/100 Ah chunks
+// dsoc- 181 - SOC (day data state of charge)
+//
+// TODO:
+// solv - 53  - solar voltage msb
 // bminl - 124 - lower byte of battery min voltage scaled to 12V
 // bmaxl - 125 - lower byte of battery max voltage scaled to 12V
-// dtemp - 180 - current external temperature
-// dsoc- 181 - SOC (day data state of charge)
 // ciahl - 188 - Internal charge ah low byte
 // ciahh - 189 - Internal charge ah high byte
 // ceahl - 193 - External charge ah low byte
