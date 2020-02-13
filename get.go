@@ -46,4 +46,16 @@ func main() {
 	}
 	// TODO: Add percent to number displayed
 	log.Printf("State of charge: %v", soc)
+
+	min, err := pli.BatteryMinVoltage()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Battery min voltage", min)
+
+	max, err := pli.BatteryMaxVoltage()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Battery min voltage", max)
 }

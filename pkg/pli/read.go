@@ -15,12 +15,12 @@ import (
 // batv - 50 - Battery voltage in 0.1V steps scaled relative to 12V.eg. 128=12.8V, for 24V system 128*2=25.6V, for 48V system128*4=51.2V
 // volt - 93 - msn= Prog number (0-4), lsn=system voltage (0-4)System voltage... 0=12V, 1=24V, 2=32V, 3=36V, 4=48VEg. 00110001 = 24V system running Prog 3.
 // bcap - 94 - battery capacity in 20/100 Ah chunks
+// bminl - 124 - lower byte of battery min voltage scaled to 12V
+// bmaxl - 125 - lower byte of battery max voltage scaled to 12V
 // dsoc- 181 - SOC (day data state of charge)
 //
 // TODO:
 // solv - 53  - solar voltage msb
-// bminl - 124 - lower byte of battery min voltage scaled to 12V
-// bmaxl - 125 - lower byte of battery max voltage scaled to 12V
 // ciahl - 188 - Internal charge ah low byte
 // ciahh - 189 - Internal charge ah high byte
 // ceahl - 193 - External charge ah low byte
@@ -141,6 +141,18 @@ func (pli *PLI) volt() (prog int, voltage int, err error) {
 		err = errors.New("Unexpected voltage value returned by PLI")
 	}
 	return
+}
+
+// TODO: This is a best guess based on incomplete documentation
+func (pli *PLI) BatteryMinVoltage() (float32, error) {
+	b, err := pli.ReadRAM(124)
+	return pli.byteToVoltage(b), err
+}
+
+// TODO: This is a best guess based on incomplete documentation
+func (pli *PLI) BatteryMaxVoltage() (float32, error) {
+	b, err := pli.ReadRAM(125)
+	return pli.byteToVoltage(b), err
 }
 
 // StateOfCharge returns a number between 0 and 100 which is very very roughly a measure of
