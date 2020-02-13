@@ -238,21 +238,19 @@ func (pli *PLI) ExternalCharge() (float32, error) {
 	if err != nil {
 		return 0, err
 	}
-	// If bit 2 is set it is enabled
+	// If bit 2 is not set it is disabled so just return zero
 	if extf&0x4 == 0 {
-		return 0, errors.New("External Charge is disabled")
-	}
-	var step float32
-	if extf&0x1 == 0 {
-		step = 0.1
-	} else {
-		step = 1.0
+		return 0, nil
 	}
 	current, err := pli.ReadRAM(205)
 	if err != nil {
 		return 0, err
 	}
-	return float32(current) * step, nil
+	value := float32(current)
+	if extf&0x1 == 0 {
+		value = value / 10
+	}
+	return value, nil
 }
 
 // ExternalLoad returns value in A
@@ -261,21 +259,19 @@ func (pli *PLI) ExternalLoad() (float32, error) {
 	if err != nil {
 		return 0, err
 	}
-	// If bit 3 is set it is enabled
+	// If bit 3 is not set it is disabled so just return zero
 	if extf&0x8 == 0 {
-		return 0, errors.New("External Load is disabled")
-	}
-	var step float32
-	if extf&0x2 == 0 {
-		step = 0.1
-	} else {
-		step = 1.0
+		return 0, nil
 	}
 	current, err := pli.ReadRAM(206)
 	if err != nil {
 		return 0, err
 	}
-	return float32(current) * step, nil
+	value := float32(current)
+	if extf&0x2 == 0 {
+		value = value / 10
+	}
+	return value, nil
 }
 
 func (pli *PLI) InternalCharge() (float32, error) {
