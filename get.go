@@ -15,22 +15,22 @@ func main() {
 	// Make sure to close it later.
 	defer pli.Close()
 
-	log.Println("System program number", pli.Prog)
-	log.Println("System voltage, ", pli.Voltage)
-	log.Println("PL Model name", pli.Model)
-	log.Println("PL Software version", pli.SoftwareVersion)
+	log.Printf("System program number: %v", pli.Prog)
+	log.Printf("System voltage: %v V", pli.Voltage)
+	log.Printf("PL Model name: %v", pli.Model)
+	log.Printf("PL Software version: %v", pli.SoftwareVersion)
 
 	v, err := pli.BatteryVoltage()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Battery voltage", v)
+	log.Printf("Battery voltage: %v V", v)
 
 	bc, err := pli.BatteryCapacity()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Batter capacity: %v Ah", bc)
+	log.Printf("Battery capacity: %v Ah", bc)
 
 	h, m, s, err := pli.Time()
 	if err != nil {
@@ -42,42 +42,41 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// TODO: Add percent to number displayed
-	log.Printf("State of charge: %v", soc)
+	log.Printf("State of charge: %v%%", soc)
 
 	min, err := pli.BatteryMinVoltage()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Battery min voltage", min)
+	log.Printf("Battery min voltage: %v V", min)
 
 	max, err := pli.BatteryMaxVoltage()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Battery min voltage", max)
+	log.Printf("Battery max voltage: %v V", max)
 
 	charge, err := pli.Charge()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Charge", charge)
+	log.Printf("Charge: %v Ah", charge)
 
 	load, err := pli.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Load", load)
+	log.Printf("Load: %v Ah", load)
 
 	chargeCurrent, err := pli.ChargeCurrent()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Charge Current:", chargeCurrent)
+	log.Printf("Charge Current: %v A", chargeCurrent)
 
 	loadCurrent, err := pli.LoadCurrent()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Load Current:", loadCurrent)
+	log.Printf("Load Current: %v A", loadCurrent)
 }
