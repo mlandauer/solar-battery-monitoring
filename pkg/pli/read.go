@@ -183,59 +183,61 @@ func (pli *PLI) readRAMTwoBytes(la byte, ha byte) (int, error) {
 	return twoBytes(h, l), nil
 }
 
-// InternalCharge returns value as Ah
-func (pli *PLI) InternalCharge() (int, error) {
+// InternalIn returns value as Ah
+func (pli *PLI) InternalIn() (int, error) {
 	return pli.readRAMTwoBytes(188, 189)
 }
 
-// ExternalCharge returns value as Ah
-func (pli *PLI) ExternalCharge() (int, error) {
+// ExternalIn returns value as Ah
+func (pli *PLI) ExternalIn() (int, error) {
 	return pli.readRAMTwoBytes(193, 194)
 }
 
-func (pli *PLI) Charge() (int, error) {
-	internal, err := pli.InternalCharge()
+// In returns value as Ah
+func (pli *PLI) In() (int, error) {
+	internal, err := pli.InternalIn()
 	if err != nil {
 		return 0, err
 	}
-	external, err := pli.ExternalCharge()
+	external, err := pli.ExternalIn()
 	if err != nil {
 		return 0, err
 	}
 	return internal + external, nil
 }
 
-// InternalLoad returns value as Ah
-func (pli *PLI) InternalLoad() (int, error) {
+// InternalOut returns value as Ah
+func (pli *PLI) InternalOut() (int, error) {
 	return pli.readRAMTwoBytes(198, 199)
 }
 
-// ExternalLoad returns value as Ah
-func (pli *PLI) ExternalLoad() (int, error) {
+// ExternalOut returns value as Ah
+func (pli *PLI) ExternalOut() (int, error) {
 	return pli.readRAMTwoBytes(203, 204)
 }
 
-func (pli *PLI) Load() (int, error) {
-	internal, err := pli.InternalLoad()
+// Out returns value as Ah
+func (pli *PLI) Out() (int, error) {
+	internal, err := pli.InternalOut()
 	if err != nil {
 		return 0, err
 	}
-	external, err := pli.ExternalLoad()
+	external, err := pli.ExternalOut()
 	if err != nil {
 		return 0, err
 	}
 	return internal + external, nil
 }
 
-// ExternalChargeCurrent returns value in A
-func (pli *PLI) ExternalChargeCurrent() (float32, error) {
+// ExternalCharge returns value in A
+func (pli *PLI) ExternalCharge() (float32, error) {
 	extf, err := pli.ReadRAM(207)
 	if err != nil {
 		return 0, err
 	}
 	// If bit 2 is set it is enabled
 	if extf&0x4 == 0 {
-		return 0, errors.New("External Charge Current is disabled")
+		return 0, errors.New("External Charge is disabled")
 	}
 	var step float32
 	if extf&0x1 == 0 {
@@ -250,15 +252,15 @@ func (pli *PLI) ExternalChargeCurrent() (float32, error) {
 	return float32(current) * step, nil
 }
 
-// ExternalLoadCurrent returns value in A
-func (pli *PLI) ExternalLoadCurrent() (float32, error) {
+// ExternalLoad returns value in A
+func (pli *PLI) ExternalLoad() (float32, error) {
 	extf, err := pli.ReadRAM(207)
 	if err != nil {
 		return 0, err
 	}
 	// If bit 3 is set it is enabled
 	if extf&0x8 == 0 {
-		return 0, errors.New("External Load Current is disabled")
+		return 0, errors.New("External Load is disabled")
 	}
 	var step float32
 	if extf&0x2 == 0 {
@@ -273,7 +275,7 @@ func (pli *PLI) ExternalLoadCurrent() (float32, error) {
 	return float32(current) * step, nil
 }
 
-func (pli *PLI) InternalChargeCurrent() (float32, error) {
+func (pli *PLI) InternalCharge() (float32, error) {
 	var step float32
 	switch pli.Model {
 	case PL20:
@@ -291,7 +293,7 @@ func (pli *PLI) InternalChargeCurrent() (float32, error) {
 	return float32(v) * step, nil
 }
 
-func (pli *PLI) InternalLoadCurrent() (float32, error) {
+func (pli *PLI) InternalLoad() (float32, error) {
 	var step float32
 	switch pli.Model {
 	case PL20, PL40:
@@ -307,24 +309,24 @@ func (pli *PLI) InternalLoadCurrent() (float32, error) {
 	return float32(v) * step, nil
 }
 
-func (pli *PLI) ChargeCurrent() (float32, error) {
-	internal, err := pli.InternalChargeCurrent()
+func (pli *PLI) Charge() (float32, error) {
+	internal, err := pli.InternalCharge()
 	if err != nil {
 		return 0, err
 	}
-	external, err := pli.ExternalChargeCurrent()
+	external, err := pli.ExternalCharge()
 	if err != nil {
 		return 0, err
 	}
 	return internal + external, nil
 }
 
-func (pli *PLI) LoadCurrent() (float32, error) {
-	internal, err := pli.InternalLoadCurrent()
+func (pli *PLI) Load() (float32, error) {
+	internal, err := pli.InternalLoad()
 	if err != nil {
 		return 0, err
 	}
-	external, err := pli.ExternalLoadCurrent()
+	external, err := pli.ExternalLoad()
 	if err != nil {
 		return 0, err
 	}

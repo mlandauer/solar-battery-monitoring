@@ -57,27 +57,27 @@ func main() {
 	}
 	log.Printf("Battery max voltage: %v V", max)
 
+	in, err := pli.In()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("In: %v Ah", in)
+
+	out, err := pli.Out()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Out: %v Ah", out)
+
 	charge, err := pli.Charge()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Charge: %v Ah", charge)
+	log.Printf("Charge: %v A", charge)
 
 	load, err := pli.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Load: %v Ah", load)
-
-	chargeCurrent, err := pli.ChargeCurrent()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Charge Current: %v A", chargeCurrent)
-
-	loadCurrent, err := pli.LoadCurrent()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Load Current: %v A", loadCurrent)
+	log.Printf("Load: %v A", load)
 }
