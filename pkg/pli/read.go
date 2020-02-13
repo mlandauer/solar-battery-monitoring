@@ -18,13 +18,13 @@ import (
 // bminl - 124 - lower byte of battery min voltage scaled to 12V
 // bmaxl - 125 - lower byte of battery max voltage scaled to 12V
 // dsoc- 181 - SOC (day data state of charge)
-//
-// TODO:
-// solv - 53  - solar voltage msb
 // ciahl - 188 - Internal charge ah low byte
 // ciahh - 189 - Internal charge ah high byte
 // ceahl - 193 - External charge ah low byte
 // ceahh - 194 - External charge ah high byte
+//
+// TODO:
+// solv - 53  - solar voltage msb
 // liahl - 198 - Internal load ah low byte
 // liahh - 199 - Internal load ah high byte
 // leahl - 203 - External load ah low byte
@@ -160,4 +160,42 @@ func (pli *PLI) BatteryMaxVoltage() (float32, error) {
 func (pli *PLI) StateOfCharge() (int, error) {
 	b, err := pli.ReadRAM(181)
 	return int(b), err
+}
+
+func twoBytes(h byte, l byte) int {
+	return (int(h) << 8) | int(l)
+}
+
+func (pli *PLI) readRAMTwoBytes(la byte, ha byte) (int, error) {
+	l, err := pli.ReadRAM(la)
+	if err != nil {
+		return 0, err
+	}
+	h, err := pli.ReadRAM(ha)
+	if err != nil {
+		return 0, err
+	}
+	return twoBytes(h, l), nil
+}
+
+// InternalCharge returns value as Ah
+func (pli *PLI) InternalCharge() (int, error) {
+	return pli.readRAMTwoBytes(188, 189)
+}
+
+// ExternalCharge returns value as Ah
+func (pli *PLI) ExternalCharge() (int, error) {
+	return pli.readRAMTwoBytes(193, 194)
+}
+
+func (pli *PLI) Charge() (int, error) {
+	internal, err := pli.InternalCharge()
+	if err != nil {
+		return 0, err
+	}
+	external, err := pli.ExternalCharge()
+	if err != nil {
+		return 0, err
+	}
+	return internal + external, nil
 }

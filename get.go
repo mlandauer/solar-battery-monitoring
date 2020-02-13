@@ -58,4 +58,10 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("Battery min voltage", max)
+
+	charge, err := pli.Charge()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Charge", charge)
 }
