@@ -29,12 +29,12 @@ import (
 // cext - 205 - external charge input (NOTE: First read ‘extf’ to check validity andscaling)
 // lext - 206 - external load input (NOTE: First read ‘extf’ to check validity andscaling)
 // extf - 207 - external flag and scale file - Bit 3, Enable of LEXT. - Bit 2, Enable for CEXT - Bit 1, 1=1A/step for LEXT (times 10), 0=0.1A/step for LEXT - Bit 0, 1=1A/step for CEXT (times 10), 0=0.1A/step for CEXT
+// cint - 213 - Internal (solar) charge current:0.1A steps for PL20 (eg. 10=1.0 Amp solar charge)0.2A steps for PL40 (eg. 10=2.0 Amps solar charge)0.4A steps for PL60 (eg. 10=4.0 Amps solar charge)
+// lint - 217 - Internal LOAD- current:0.1A steps for PL20/PL40 (eg. 10=1.0A), 0.2A steps for PL60 (eg.10=2.0A)
 //
 // TODO:
 // solv - 53  - solar voltage msb
 // vext - 208 - external voltage reading 0-255 volt 1V steps
-// cint - 213 - Internal (solar) charge current:0.1A steps for PL20 (eg. 10=1.0 Amp solar charge)0.2A steps for PL40 (eg. 10=2.0 Amps solar charge)0.4A steps for PL60 (eg. 10=4.0 Amps solar charge)
-// lint - 217 - Internal LOAD- current:0.1A steps for PL20/PL40 (eg. 10=1.0A), 0.2A steps for PL60 (eg.10=2.0A)
 // batvl - 220 - battery voltage lsb
 // vbat - 221 - battery voltage msb
 // solvl - 232 - solar voltage lsb
@@ -266,4 +266,38 @@ func (pli *PLI) ExternalLoadCurrent() (float32, error) {
 		return 0, err
 	}
 	return float32(current) * step, nil
+}
+
+func (pli *PLI) InternalChargeCurrent() (float32, error) {
+	var step float32
+	switch pli.Model {
+	case "PL20":
+		step = 0.1
+	case "PL40":
+		step = 0.2
+	// Guessing what it is for PL80 - undocumented
+	case "PL60", "PL80":
+		step = 0.4
+	}
+	v, err := pli.ReadRAM(213)
+	if err != nil {
+		return 0, err
+	}
+	return float32(v) * step, nil
+}
+
+func (pli *PLI) InternalLoadCurrent() (float32, error) {
+	var step float32
+	switch pli.Model {
+	case "PL20", "PL40":
+		step = 0.1
+	// Guessing what it is for PL80 - undocumented
+	case "PL60", "PL80":
+		step = 0.2
+	}
+	v, err := pli.ReadRAM(217)
+	if err != nil {
+		return 0, err
+	}
+	return float32(v) * step, nil
 }
