@@ -93,10 +93,13 @@ func (pli *PLI) Time() (hour int, min int, sec int, err error) {
 	return
 }
 
+func (pli *PLI) byteToVoltage(b byte) float32 {
+	return float32(b) * 0.1 * float32(pli.Voltage) / 12
+}
+
 func (pli *PLI) BatteryVoltage() (float32, error) {
 	b, err := pli.ReadRAM(50)
-	value := float32(b) * 0.1 * float32(pli.Voltage) / 12
-	return value, err
+	return pli.byteToVoltage(b), err
 }
 
 // BatterCapacity returns the capacity of the battery measured in Ah
