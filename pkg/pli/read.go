@@ -61,8 +61,12 @@ func (pli *PLI) SoftwareVersion() (string, byte, error) {
 // Time returns the time (to the nearest 2 seconds) as stored in the PLI. This is used internally to
 // total things over the day. So, it's fairly important that it's roughly correct.
 func (pli *PLI) Time() (hour int, min int, sec int, err error) {
-	a, err := pli.ReadRAM(48) // 6 minute chunks
+	a, err := pli.ReadRAM(46) // 2 second chunks
 	if err != nil {
+		return
+	}
+	if a > 29 {
+		err = errors.New("Expected 'seconds' byte to be in the range 0-29")
 		return
 	}
 	b, err := pli.ReadRAM(47) // minute chunks (0-5)
@@ -70,14 +74,17 @@ func (pli *PLI) Time() (hour int, min int, sec int, err error) {
 		return
 	}
 	if b > 5 {
-		err = errors.New("Expected minute to be in the range 0-5")
+		err = errors.New("Expected 'minute' byte to be in the range 0-5")
 		return
 	}
-	c, err := pli.ReadRAM(46) // 2 second chunks
+	c, err := pli.ReadRAM(48) // 6 minute chunks
 	if err != nil {
 		return
 	}
-	sec = int(a)*6*60 + int(b)*60 + int(c)*2
+	if c > 239 {
+		err = errors.New("Expected 'hour' byte to be in the range 0-239")
+	}
+	sec = int(c)*6*60 + int(b)*60 + int(a)*2
 	min = sec / 60
 	sec = sec % 60
 	hour = min / 60
