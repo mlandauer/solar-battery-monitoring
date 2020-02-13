@@ -40,4 +40,10 @@ func main() {
 	}
 	log.Printf("Time: %v:%v:%v", h, m, s)
 
+	soc, err := pli.StateOfCharge()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// TODO: Add percent to number displayed
+	log.Printf("State of charge: %v", soc)
 }

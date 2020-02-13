@@ -131,3 +131,10 @@ func (pli *PLI) BatteryVoltage() (float32, error) {
 	value := float32(b) * 0.1 * float32(pli.Voltage) / 12
 	return value, err
 }
+
+// StateOfCharge returns a number between 0 and 100 which is very very roughly a measure of
+// how full the battery is. There are many ways this number can be misleading. So be careful.
+func (pli *PLI) StateOfCharge() (int, error) {
+	b, err := pli.ReadRAM(181)
+	return int(b), err
+}
