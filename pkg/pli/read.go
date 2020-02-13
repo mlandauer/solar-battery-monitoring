@@ -43,19 +43,24 @@ import (
 // Reading the solar voltage is complicated because the charging needs to be stopped and the
 // display activated to get an accurate reading
 
+const PL20 = "PL20"
+const PL40 = "PL40"
+const PL60 = "PL60"
+const PL80 = "PL80"
+
 func (pli *PLI) softwareVersion() (string, byte, error) {
 	value, err := pli.ReadRAM(0)
 	if err != nil {
 		return "", value, err
 	}
 	if value < 128 {
-		return "PL20", value, nil
+		return PL20, value, nil
 	} else if value < 192 {
-		return "PL40", value, nil
+		return PL40, value, nil
 	} else if value < 211 {
-		return "PL60", value, nil
+		return PL60, value, nil
 	} else {
-		return "PL80", value, nil
+		return PL80, value, nil
 	}
 }
 
@@ -271,12 +276,12 @@ func (pli *PLI) ExternalLoadCurrent() (float32, error) {
 func (pli *PLI) InternalChargeCurrent() (float32, error) {
 	var step float32
 	switch pli.Model {
-	case "PL20":
+	case PL20:
 		step = 0.1
-	case "PL40":
+	case PL40:
 		step = 0.2
 	// Guessing what it is for PL80 - undocumented
-	case "PL60", "PL80":
+	case PL60, PL80:
 		step = 0.4
 	}
 	v, err := pli.ReadRAM(213)
@@ -289,10 +294,10 @@ func (pli *PLI) InternalChargeCurrent() (float32, error) {
 func (pli *PLI) InternalLoadCurrent() (float32, error) {
 	var step float32
 	switch pli.Model {
-	case "PL20", "PL40":
+	case PL20, PL40:
 		step = 0.1
 	// Guessing what it is for PL80 - undocumented
-	case "PL60", "PL80":
+	case PL60, PL80:
 		step = 0.2
 	}
 	v, err := pli.ReadRAM(217)
