@@ -102,6 +102,7 @@ func (pli *PLI) byteToVoltage(b byte) float32 {
 	return float32(b) * 0.1 * float32(pli.Voltage) / 12
 }
 
+// TODO: This gives a slightly different reading to what the PL80 is showing (out by 0.1V)
 func (pli *PLI) BatteryVoltage() (float32, error) {
 	b, err := pli.ReadRAM(50)
 	return pli.byteToVoltage(b), err
@@ -149,12 +150,14 @@ func (pli *PLI) volt() (prog int, voltage int, err error) {
 }
 
 // TODO: This is a best guess based on incomplete documentation
+// TODO: This is just returning zero for some reason
 func (pli *PLI) BatteryMinVoltage() (float32, error) {
 	b, err := pli.ReadRAM(124)
 	return pli.byteToVoltage(b), err
 }
 
 // TODO: This is a best guess based on incomplete documentation
+// TODO: This is just returning zero for some reason
 func (pli *PLI) BatteryMaxVoltage() (float32, error) {
 	b, err := pli.ReadRAM(125)
 	return pli.byteToVoltage(b), err
