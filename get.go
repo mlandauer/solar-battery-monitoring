@@ -45,18 +45,6 @@ func main() {
 	}
 	log.Printf("State of charge: %v%%", soc)
 
-	min, err := pli.BatteryMinVoltage()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Battery min voltage: %v V", min)
-
-	max, err := pli.BatteryMaxVoltage()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Battery max voltage: %v V", max)
-
 	in, err := pli.In()
 	if err != nil {
 		log.Fatal(err)
