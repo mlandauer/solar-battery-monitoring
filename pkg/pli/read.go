@@ -22,16 +22,16 @@ import (
 // ciahh - 189 - Internal charge ah high byte
 // ceahl - 193 - External charge ah low byte
 // ceahh - 194 - External charge ah high byte
-//
-// TODO:
-// solv - 53  - solar voltage msb
 // liahl - 198 - Internal load ah low byte
 // liahh - 199 - Internal load ah high byte
 // leahl - 203 - External load ah low byte
 // leahh - 204 - External load ah high byte
+//
+// TODO:
+// solv - 53  - solar voltage msb
 // cext - 205 - external charge input (NOTE: First read ‘extf’ to check validity andscaling)
 // lext - 206 - external load input (NOTE: First read ‘extf’ to check validity andscaling)
-// extf - 207 - external flag and scale fileBit 3, Enable of LEXT.Bit 2, Enable for CEXTBit 1, 1=1A/step for LEXT (times 10), 0=0.1A/step for LEXTBit 0, 1=1A/step for CEXT (times 10), 0=0.1A/step for CEXT
+// extf - 207 - external flag and scale file - Bit 3, Enable of LEXT. - Bit 2, Enable for CEXT - Bit 1, 1=1A/step for LEXT (times 10), 0=0.1A/step for LEXT - Bit 0, 1=1A/step for CEXT (times 10), 0=0.1A/step for CEXT
 // vext - 208 - external voltage reading 0-255 volt 1V steps
 // cint - 213 - Internal (solar) charge current:0.1A steps for PL20 (eg. 10=1.0 Amp solar charge)0.2A steps for PL40 (eg. 10=2.0 Amps solar charge)0.4A steps for PL60 (eg. 10=4.0 Amps solar charge)
 // lint - 217 - Internal LOAD- current:0.1A steps for PL20/PL40 (eg. 10=1.0A), 0.2A steps for PL60 (eg.10=2.0A)
@@ -194,6 +194,28 @@ func (pli *PLI) Charge() (int, error) {
 		return 0, err
 	}
 	external, err := pli.ExternalCharge()
+	if err != nil {
+		return 0, err
+	}
+	return internal + external, nil
+}
+
+// InternalLoad returns value as Ah
+func (pli *PLI) InternalLoad() (int, error) {
+	return pli.readRAMTwoBytes(198, 199)
+}
+
+// ExternalLoad returns value as Ah
+func (pli *PLI) ExternalLoad() (int, error) {
+	return pli.readRAMTwoBytes(203, 204)
+}
+
+func (pli *PLI) Load() (int, error) {
+	internal, err := pli.InternalLoad()
+	if err != nil {
+		return 0, err
+	}
+	external, err := pli.ExternalLoad()
 	if err != nil {
 		return 0, err
 	}

@@ -64,4 +64,10 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("Charge", charge)
+
+	load, err := pli.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Load", load)
 }
