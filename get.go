@@ -19,6 +19,9 @@ func main() {
 	log.Println("System voltage, ", pli.Voltage)
 
 	model, version, err := pli.SoftwareVersion()
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println("PL Model name", model)
 	log.Println("PL Software version", version)
 
