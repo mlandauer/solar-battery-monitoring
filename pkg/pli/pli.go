@@ -10,9 +10,11 @@ import (
 
 // PLI is used to talk to a particular PLI
 type PLI struct {
-	Port    io.ReadWriteCloser
-	Prog    int // System program
-	Voltage int // Voltage of battery system
+	Port            io.ReadWriteCloser
+	Prog            int // System program
+	Voltage         int // Voltage of battery system
+	Model           string
+	SoftwareVersion int
 }
 
 func New(portName string) (pli PLI, err error) {
@@ -46,8 +48,19 @@ func New(portName string) (pli PLI, err error) {
 	// Now get the system voltage (because we need that later to scale some readings)
 	log.Println("Getting the system voltage...")
 	prog, voltage, err := pli.volt()
+	if err != nil {
+		return
+	}
 	pli.Prog = prog
 	pli.Voltage = voltage
+
+	// We need the model type for later so we're getting it now
+	model, softwareVersion, err := pli.softwareVersion()
+	if err != nil {
+		return
+	}
+	pli.Model = model
+	pli.SoftwareVersion = int(softwareVersion)
 
 	return
 }

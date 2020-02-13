@@ -43,7 +43,7 @@ import (
 // Reading the solar voltage is complicated because the charging needs to be stopped and the
 // display activated to get an accurate reading
 
-func (pli *PLI) SoftwareVersion() (string, byte, error) {
+func (pli *PLI) softwareVersion() (string, byte, error) {
 	value, err := pli.ReadRAM(0)
 	if err != nil {
 		return "", value, err
