@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// TODO: Don't yet know how we easily get the port name for the device
-	pli, err := pli.New("/dev/tty.usbserial-AM009SBW")
+	pli, err := pli.New("/dev/tty.usbserial-AM009SBW", 9600)
 	if err != nil {
 		log.Fatal(err)
 	}

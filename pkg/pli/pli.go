@@ -17,14 +17,15 @@ type PLI struct {
 	SoftwareVersion int
 }
 
-func New(portName string) (pli PLI, err error) {
+func New(portName string, baudRate uint) (pli PLI, err error) {
+	// TODO: Check that the baudRate is one of the speeds supported by the PLI
 	// Set up options.
 	// 8 bit, No parity, 1 stop bit is what the PLI expects
 	// 9600 baud is the fastest speed the PLI can work at. That baud rate needs to be setup
 	// with DIP switches on the PLI circuitboard itself. This is like a little glimpse into the past.
 	options := serial.OpenOptions{
 		PortName:   portName,
-		BaudRate:   9600,
+		BaudRate:   baudRate,
 		DataBits:   8,
 		StopBits:   1,
 		ParityMode: serial.PARITY_NONE,
