@@ -301,3 +301,27 @@ func (pli *PLI) InternalLoadCurrent() (float32, error) {
 	}
 	return float32(v) * step, nil
 }
+
+func (pli *PLI) ChargeCurrent() (float32, error) {
+	internal, err := pli.InternalChargeCurrent()
+	if err != nil {
+		return 0, err
+	}
+	external, err := pli.ExternalChargeCurrent()
+	if err != nil {
+		return 0, err
+	}
+	return internal + external, nil
+}
+
+func (pli *PLI) LoadCurrent() (float32, error) {
+	internal, err := pli.InternalLoadCurrent()
+	if err != nil {
+		return 0, err
+	}
+	external, err := pli.ExternalLoadCurrent()
+	if err != nil {
+		return 0, err
+	}
+	return internal + external, nil
+}

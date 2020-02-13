@@ -68,4 +68,16 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("Load", load)
+
+	chargeCurrent, err := pli.ChargeCurrent()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Charge Current:", chargeCurrent)
+
+	loadCurrent, err := pli.LoadCurrent()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Load Current:", loadCurrent)
 }
