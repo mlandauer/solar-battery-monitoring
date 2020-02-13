@@ -3,6 +3,7 @@ package pli
 import (
 	"errors"
 	"io"
+	"time"
 
 	"github.com/jacobsa/go-serial/serial"
 )
@@ -73,15 +74,26 @@ func extractNibbles(value byte) (msn byte, lsn byte) {
 	return
 }
 
-func (pli *PLI) ReadRAM(address byte) (byte, error) {
-	err := commandReadRAM(pli.Port, address)
-	if err != nil {
-		return 0, err
+func (pli *PLI) ReadRAM(address byte) (b byte, err error) {
+	const maxRetries = 5
+	const retryWaitTime = 1 * time.Second
+
+	for i := 0; i < maxRetries; i++ {
+		err = commandReadRAM(pli.Port, address)
+		if err != nil {
+			return
+		}
+		b, err = readResponse(pli.Port)
+		if err == nil || err != ErrTimeout {
+			return
+		}
+		time.Sleep(retryWaitTime)
 	}
-	return readResponse(pli.Port)
+	return
 }
 
 var ErrLoopbackResponse = errors.New("PLI Error: Loopback response code")
+var ErrTimeout = errors.New("PLI Error: Timeout Error")
 
 // All one byte responses we consider errors (even loopback response)
 func readResponse(port io.Reader) (byte, error) {
@@ -108,7 +120,7 @@ func readResponse(port io.Reader) (byte, error) {
 			case 128:
 				return 0, ErrLoopbackResponse
 			case 129:
-				return 0, errors.New("PLI Error: Timeout Error")
+				return 0, ErrTimeout
 			case 130:
 				return 0, errors.New("PLI Error: Checksum error in PLI receive data")
 			case 131:
