@@ -3,7 +3,6 @@ package pli
 import (
 	"errors"
 	"io"
-	"log"
 
 	"github.com/jacobsa/go-serial/serial"
 )
@@ -40,14 +39,12 @@ func New(portName string, baudRate uint) (pli PLI, err error) {
 		return
 	}
 
-	log.Println("Doing a loopback test to make sure that communication channels are all working...")
 	err = pli.loopbackTest()
 	if err != nil {
 		return
 	}
 
 	// Now get the system voltage (because we need that later to scale some readings)
-	log.Println("Getting the system voltage...")
 	prog, voltage, err := pli.volt()
 	if err != nil {
 		return
