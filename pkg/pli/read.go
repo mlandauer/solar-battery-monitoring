@@ -26,12 +26,12 @@ import (
 // liahh - 199 - Internal load ah high byte
 // leahl - 203 - External load ah low byte
 // leahh - 204 - External load ah high byte
-//
-// TODO:
-// solv - 53  - solar voltage msb
 // cext - 205 - external charge input (NOTE: First read ‘extf’ to check validity andscaling)
 // lext - 206 - external load input (NOTE: First read ‘extf’ to check validity andscaling)
 // extf - 207 - external flag and scale file - Bit 3, Enable of LEXT. - Bit 2, Enable for CEXT - Bit 1, 1=1A/step for LEXT (times 10), 0=0.1A/step for LEXT - Bit 0, 1=1A/step for CEXT (times 10), 0=0.1A/step for CEXT
+//
+// TODO:
+// solv - 53  - solar voltage msb
 // vext - 208 - external voltage reading 0-255 volt 1V steps
 // cint - 213 - Internal (solar) charge current:0.1A steps for PL20 (eg. 10=1.0 Amp solar charge)0.2A steps for PL40 (eg. 10=2.0 Amps solar charge)0.4A steps for PL60 (eg. 10=4.0 Amps solar charge)
 // lint - 217 - Internal LOAD- current:0.1A steps for PL20/PL40 (eg. 10=1.0A), 0.2A steps for PL60 (eg.10=2.0A)
@@ -220,4 +220,50 @@ func (pli *PLI) Load() (int, error) {
 		return 0, err
 	}
 	return internal + external, nil
+}
+
+// ExternalChargeCurrent returns value in A
+func (pli *PLI) ExternalChargeCurrent() (float32, error) {
+	extf, err := pli.ReadRAM(207)
+	if err != nil {
+		return 0, err
+	}
+	// If bit 2 is set it is enabled
+	if extf&0x4 == 0 {
+		return 0, errors.New("External Charge Current is disabled")
+	}
+	var step float32
+	if extf&0x1 == 0 {
+		step = 0.1
+	} else {
+		step = 1.0
+	}
+	current, err := pli.ReadRAM(205)
+	if err != nil {
+		return 0, err
+	}
+	return float32(current) * step, nil
+}
+
+// ExternalLoadCurrent returns value in A
+func (pli *PLI) ExternalLoadCurrent() (float32, error) {
+	extf, err := pli.ReadRAM(207)
+	if err != nil {
+		return 0, err
+	}
+	// If bit 3 is set it is enabled
+	if extf&0x8 == 0 {
+		return 0, errors.New("External Load Current is disabled")
+	}
+	var step float32
+	if extf&0x2 == 0 {
+		step = 0.1
+	} else {
+		step = 1.0
+	}
+	current, err := pli.ReadRAM(206)
+	if err != nil {
+		return 0, err
+	}
+	return float32(current) * step, nil
 }
