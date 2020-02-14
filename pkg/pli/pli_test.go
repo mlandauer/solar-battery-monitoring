@@ -20,3 +20,9 @@ func TestExtractNibbles(t *testing.T) {
 	assert.Equal(t, byte(3), msn)
 	assert.Equal(t, byte(1), lsn)
 }
+
+func TestRounding(t *testing.T) {
+	// If we do this calculation naively by doing float32(b)*0.4 we get a bad rounding error
+	var b byte = 52
+	assert.Equal(t, float32(20.8), float32(b)*2/5)
+}

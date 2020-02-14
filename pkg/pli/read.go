@@ -261,37 +261,37 @@ func (pli *PLI) ExternalLoad() (float32, error) {
 }
 
 func (pli *PLI) InternalCharge() (float32, error) {
-	var step float32
-	switch pli.Model {
-	case PL20:
-		step = 0.1
-	case PL40:
-		step = 0.2
-	// Guessing what it is for PL80 - undocumented
-	case PL60, PL80:
-		step = 0.4
-	}
 	v, err := pli.ReadRAM(213)
 	if err != nil {
 		return 0, err
 	}
-	return float32(v) * step, nil
+	value := float32(v)
+	switch pli.Model {
+	case PL20:
+		value = value / 10
+	case PL40:
+		value = value / 5
+	// Guessing what it is for PL80 - undocumented
+	case PL60, PL80:
+		value = value * 2 / 5
+	}
+	return value, nil
 }
 
 func (pli *PLI) InternalLoad() (float32, error) {
-	var step float32
-	switch pli.Model {
-	case PL20, PL40:
-		step = 0.1
-	// Guessing what it is for PL80 - undocumented
-	case PL60, PL80:
-		step = 0.2
-	}
 	v, err := pli.ReadRAM(217)
 	if err != nil {
 		return 0, err
 	}
-	return float32(v) * step, nil
+	value := float32(v)
+	switch pli.Model {
+	case PL20, PL40:
+		value = value / 10
+	// Guessing what it is for PL80 - undocumented
+	case PL60, PL80:
+		value = value / 5
+	}
+	return value, nil
 }
 
 func (pli *PLI) Charge() (float32, error) {
