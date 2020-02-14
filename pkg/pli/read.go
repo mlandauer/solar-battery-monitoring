@@ -99,7 +99,7 @@ func (pli *PLI) Time() (hour int, min int, sec int, err error) {
 }
 
 func (pli *PLI) byteToVoltage(b byte) float32 {
-	return float32(b) * 0.1 * float32(pli.Voltage) / 12
+	return float32(b) * float32(pli.Voltage) / 10 / 12
 }
 
 // TODO: This gives a slightly different reading to what the PL80 is showing (out by 0.1V)
