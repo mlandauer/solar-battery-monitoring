@@ -29,20 +29,6 @@ func main() {
 	}
 	defer influx.Close()
 
-	// The actual write..., this method can be called concurrently.
-	_, err = influx.Write(
-		context.Background(), os.Getenv("INFLUXDB_BUCKET"), os.Getenv("INFLUXDB_ORG"),
-		influxdb.NewRowMetric(
-			map[string]interface{}{"memory": 1000, "cpu": 0.93},
-			"solar",
-			map[string]string{},
-			time.Now(),
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var device string
 	switch runtime.GOOS {
 	case "darwin":
@@ -114,4 +100,25 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("Load: %v A", load)
+
+	_, err = influx.Write(
+		context.Background(), os.Getenv("INFLUXDB_BUCKET"), os.Getenv("INFLUXDB_ORG"),
+		influxdb.NewRowMetric(
+			map[string]interface{}{
+				"battery_voltage": v,
+				"soc":             soc,
+				"in":              in,
+				"out":             out,
+				"charge":          charge,
+				"load":            load,
+			},
+			"solar",
+			map[string]string{},
+			time.Now(),
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
