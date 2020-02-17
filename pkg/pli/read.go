@@ -2,6 +2,7 @@ package pli
 
 import (
 	"errors"
+	"time"
 )
 
 // Methods for reading values (at a high level) from the PLI
@@ -95,6 +96,26 @@ func (pli *PLI) Time() (hour int, min int, sec int, err error) {
 	sec = sec % 60
 	hour = min / 60
 	min = min % 60
+	return
+}
+
+// CheckTime gets the time as stored in the PLI but will also error if it's too
+// different from the "real" time as known by the computer
+func (pli *PLI) CheckTime() (hour int, min int, sec int, err error) {
+	hour, min, sec, err = pli.Time()
+	if err != nil {
+		return
+	}
+	// Now compare the time to the real time and error if it is 15 minutes or more out
+	realTime := time.Now()
+	systemTime := time.Date(
+		realTime.Year(), realTime.Month(), realTime.Day(),
+		hour, min, sec, 0,
+		realTime.Location(),
+	)
+	if systemTime.Sub(realTime).Minutes() >= 15 {
+		err = errors.New("PL system time is too different from the real time")
+	}
 	return
 }
 
