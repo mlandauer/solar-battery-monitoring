@@ -59,66 +59,69 @@ func main() {
 	}
 	log.Printf("Time: %v:%v:%v", h, m, s)
 
-	v, err := pli.BatteryVoltage()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Battery voltage: %v V", v)
+	for {
+		v, err := pli.BatteryVoltage()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Battery voltage: %v V", v)
 
-	bc, err := pli.BatteryCapacity()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Battery capacity: %v Ah", bc)
+		bc, err := pli.BatteryCapacity()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Battery capacity: %v Ah", bc)
 
-	soc, err := pli.StateOfCharge()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("State of charge: %v%%", soc)
+		soc, err := pli.StateOfCharge()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("State of charge: %v%%", soc)
 
-	in, err := pli.In()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("In: %v Ah", in)
+		in, err := pli.In()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("In: %v Ah", in)
 
-	out, err := pli.Out()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Out: %v Ah", out)
+		out, err := pli.Out()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Out: %v Ah", out)
 
-	charge, err := pli.Charge()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Charge: %v A", charge)
+		charge, err := pli.Charge()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Charge: %v A", charge)
 
-	load, err := pli.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Load: %v A", load)
+		load, err := pli.Load()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Load: %v A", load)
 
-	_, err = influx.Write(
-		context.Background(), os.Getenv("INFLUXDB_BUCKET"), os.Getenv("INFLUXDB_ORG"),
-		influxdb.NewRowMetric(
-			map[string]interface{}{
-				"battery_voltage": v,
-				"soc":             soc,
-				"in":              in,
-				"out":             out,
-				"charge":          charge,
-				"load":            load,
-			},
-			"solar",
-			map[string]string{},
-			time.Now(),
-		),
-	)
-	if err != nil {
-		log.Fatal(err)
+		_, err = influx.Write(
+			context.Background(), os.Getenv("INFLUXDB_BUCKET"), os.Getenv("INFLUXDB_ORG"),
+			influxdb.NewRowMetric(
+				map[string]interface{}{
+					"battery_voltage": v,
+					"soc":             soc,
+					"in":              in,
+					"out":             out,
+					"charge":          charge,
+					"load":            load,
+				},
+				"solar",
+				map[string]string{},
+				time.Now(),
+			),
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("Sleeping for ten seconds...")
+		time.Sleep(time.Second * 10)
 	}
-
 }
