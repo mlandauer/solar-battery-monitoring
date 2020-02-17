@@ -57,11 +57,11 @@ func main() {
 	log.Printf("PL Model name: %v", pli.Model)
 	log.Printf("PL Software version: %v", pli.SoftwareVersion)
 
-	h, m, s, err := pli.CheckTime()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Time: %v:%v:%v", h, m, s)
+	// h, m, s, err := pli.CheckTime()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// log.Printf("Time: %v:%v:%v", h, m, s)
 
 	for {
 		v, err := pli.BatteryVoltage()
