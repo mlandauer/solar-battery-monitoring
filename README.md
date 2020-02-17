@@ -27,3 +27,13 @@ Other bits of software and hardware that we might want to use:
 - [InfluxDB](https://www.influxdata.com/) for storing data
 - [Grafana](https://grafana.com/) for prototyping the visualisation of the data in InfluxDB
 - [OpenBalena](https://www.balena.io/open/) for managing the software on the Raspberry PI using Docker.
+
+## Environment variables
+
+You'll need to set some environment variables for everything to work as expected. In development you can add a
+`.env` file which makes thing a bit easier
+
+- INFLUXDB_URL
+- INFLUXDB_TOKEN
+- INFLUXDB_BUCKET
+- INFLUXDB_ORG

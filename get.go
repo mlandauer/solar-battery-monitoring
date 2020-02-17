@@ -1,13 +1,48 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net/http"
+	"os"
 	"runtime"
+	"time"
 
+	"github.com/influxdata/influxdb-client-go"
+	"github.com/joho/godotenv"
 	"github.com/mlandauer/solar-battery-monitoring/pkg/pli"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	influx, err := influxdb.New(
+		os.Getenv("INFLUXDB_URL"),
+		os.Getenv("INFLUXDB_TOKEN"),
+		influxdb.WithHTTPClient(http.DefaultClient),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer influx.Close()
+
+	// The actual write..., this method can be called concurrently.
+	_, err = influx.Write(
+		context.Background(), os.Getenv("INFLUXDB_BUCKET"), os.Getenv("INFLUXDB_ORG"),
+		influxdb.NewRowMetric(
+			map[string]interface{}{"memory": 1000, "cpu": 0.93},
+			"solar",
+			map[string]string{},
+			time.Now(),
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var device string
 	switch runtime.GOOS {
 	case "darwin":
