@@ -2,14 +2,25 @@ package main
 
 import (
 	"log"
+	"runtime"
 
 	"github.com/mlandauer/solar-battery-monitoring/pkg/pli"
 )
 
 func main() {
+	var device string
+	switch runtime.GOOS {
+	case "darwin":
+		device = "/dev/tty.usbserial-AM009SBW"
+	case "linux":
+		device = "/dev/ttyUSB0"
+	default:
+		log.Fatal("Unsupported operation system")
+	}
+
 	// TODO: Don't yet know how we easily get the port name for the device
 	log.Println("Setting up communication with the PLI...")
-	pli, err := pli.New("/dev/tty.usbserial-AM009SBW", 9600)
+	pli, err := pli.New(device, 9600)
 	if err != nil {
 		log.Fatal(err)
 	}
