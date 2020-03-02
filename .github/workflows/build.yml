@@ -39,7 +39,7 @@ jobs:
           ./deviceplane deploy solar-monitoring deviceplane.yml
         env:
           DEVICEPLANE_ACCESS_KEY: ${{ secrets.DEVICEPLANE_ACCESS_KEY }}
-          DEVICEPLANE_PROJECT: ${{ secrets.DEVICEPLANE_ACCESS_KEY }}
+          DEVICEPLANE_PROJECT: ${{ secrets.DEVICEPLANE_PROJECT }}
           INFLUXDB_URL: ${{ secrets.INFLUXDB_URL }}
           INFLUXDB_TOKEN: ${{ secrets.INFLUXDB_TOKEN }}
           INFLUXDB_BUCKET: ${{ secrets.INFLUXDB_BUCKET }}
