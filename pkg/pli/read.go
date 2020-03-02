@@ -170,6 +170,30 @@ func (pli *PLI) volt() (prog int, voltage int, err error) {
 	return
 }
 
+const RegulatorStateBoost = "boost"
+const RegulatorStateEqualise = "equalise"
+const RegulatorStateAbsorption = "absorption"
+const RegulatorStateFloat = "float"
+
+func (pli *PLI) RegulatorState() (string, error) {
+	b, err := pli.ReadRAM(101)
+	if err != nil {
+		return "", err
+	}
+	switch b & 0x3 {
+	case 0:
+		return RegulatorStateBoost, nil
+	case 1:
+		return RegulatorStateEqualise, nil
+	case 2:
+		return RegulatorStateAbsorption, nil
+	case 3:
+		return RegulatorStateFloat, nil
+	default:
+		return "", errors.New("Unexpected value")
+	}
+}
+
 // StateOfCharge returns a number between 0 and 100 which is very very roughly a measure of
 // how full the battery is. There are many ways this number can be misleading. So be careful.
 func (pli *PLI) StateOfCharge() (int, error) {

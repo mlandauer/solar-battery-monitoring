@@ -106,6 +106,12 @@ func main() {
 		}
 		log.Printf("Load: %v A", load)
 
+		state, err := pli.RegulatorState()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Regulator State: %v", state)
+
 		_, err = influx.Write(
 			context.Background(), os.Getenv("INFLUXDB_BUCKET"), os.Getenv("INFLUXDB_ORG"),
 			influxdb.NewRowMetric(
@@ -116,6 +122,7 @@ func main() {
 					"out":             out,
 					"charge":          charge,
 					"load":            load,
+					"regulator_state": state,
 				},
 				"solar",
 				map[string]string{},
