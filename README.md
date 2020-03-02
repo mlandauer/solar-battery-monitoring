@@ -37,3 +37,18 @@ You'll need to set some environment variables for everything to work as expected
 - INFLUXDB_TOKEN
 - INFLUXDB_BUCKET
 - INFLUXDB_ORG
+
+## Deploying to production
+
+We're experimenting with using [deviceplane](https://deviceplane.com/) for managing the machine(s) running in "production". When an update to this repo is pushed to GitHub, a cross-platform docker image is automatically built with GitHub Actions and pushed to the Docker registry. Then, a new deploy is made with deviceplane using the new docker image and those are automatically rolled out to the necessary devices.
+
+To make all this work some secrets need to be set up on GitHub:
+
+- DEVICEPLANE_ACCESS_KEY
+- DEVICEPLANE_PROJECT
+- DOCKER_PASSWORD
+- DOCKER_USERNAME
+- INFLUXDB_BUCKET
+- INFLUXDB_ORG
+- INFLUXDB_TOKEN
+- INFLUXDB_URL
