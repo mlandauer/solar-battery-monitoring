@@ -1,0 +1,9 @@
+solar-battery-monitoring:
+  image: mlandauer/solar-battery-monitoring:$GITHUB_SHA
+  devices:
+    - "/dev/ttyUSB0:/dev/ttyUSB0"
+  environment:
+    INFLUXDB_URL: $INFLUXDB_URL
+    INFLUXDB_TOKEN: $INFLUXDB_TOKEN
+    INFLUXDB_BUCKET: $INFLUXDB_BUCKET
+    INFLUXDB_ORG: $INFLUXDB_ORG

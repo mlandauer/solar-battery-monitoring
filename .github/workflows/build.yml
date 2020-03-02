@@ -32,3 +32,11 @@ jobs:
             -t mlandauer/solar-battery-monitoring:$GITHUB_SHA \
             --push \
             .
+      - name: Deploy
+        run: |
+          deviceplane deploy solar-monitoring deviceplane.yml
+        env:
+          INFLUXDB_URL: ${{ secrets.INFLUXDB_URL }}
+          INFLUXDB_TOKEN: ${{ secrets.INFLUXDB_TOKEN }}
+          INFLUXDB_BUCKET: ${{ secrets.INFLUXDB_BUCKET }}
+          INFLUXDB_ORG: ${{ secrets.INFLUXDB_ORG }}
