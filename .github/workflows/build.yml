@@ -17,7 +17,6 @@ jobs:
           wget https://downloads.deviceplane.com/cli/latest/linux/amd64/deviceplane
           chmod +x deviceplane
           mv deviceplane $GITHUB_WORKSPACE/bin
-          echo "::add_path::$GITHUB_WORKSPACE/bin"
       - name: Checkout
         uses: actions/checkout@v1
       - name: Set up Docker Buildx
@@ -41,7 +40,7 @@ jobs:
             .
       - name: Deploy
         run: |
-          deviceplane deploy solar-monitoring deviceplane.yml
+          $GITHUB_WORKSPACE/bin/deviceplane deploy solar-monitoring deviceplane.yml
         env:
           INFLUXDB_URL: ${{ secrets.INFLUXDB_URL }}
           INFLUXDB_TOKEN: ${{ secrets.INFLUXDB_TOKEN }}
