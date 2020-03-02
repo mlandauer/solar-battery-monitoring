@@ -13,9 +13,11 @@ jobs:
     steps:
       - name: Install deviceplane
         run: |
+          mkdir -p $GITHUB_WORKSPACE/bin
           wget https://downloads.deviceplane.com/cli/latest/linux/amd64/deviceplane
           chmod +x deviceplane
-          mv deviceplane /usr/local/bin
+          mv deviceplane $GITHUB_WORKSPACE/bin
+          echo "::add_path::$GITHUB_WORKSPACE/bin"
       - name: Checkout
         uses: actions/checkout@v1
       - name: Set up Docker Buildx
