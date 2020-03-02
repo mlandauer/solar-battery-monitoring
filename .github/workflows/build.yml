@@ -29,6 +29,6 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm/v7 \
-            -t mlandauer/solar-battery-monitoring \
+            -t mlandauer/solar-battery-monitoring:$GITHUB_SHA \
             --push \
             .
