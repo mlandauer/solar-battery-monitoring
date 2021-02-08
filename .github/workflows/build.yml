@@ -29,7 +29,7 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm/v7,linux/arm64 \
-            -t mlandauer/solar-battery-monitoring:$GITHUB_SHA \
+            -t mlandauer/solar-battery-monitoring:${GITHUB_REF#refs/heads/}-${GITHUB_SHA:0:7}-$(date +%s) \
             --push \
             .
       - name: Deploy
