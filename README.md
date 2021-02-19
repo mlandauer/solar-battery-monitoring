@@ -52,3 +52,16 @@ To make all this work some secrets need to be set up on GitHub:
 - INFLUXDB_ORG
 - INFLUXDB_TOKEN
 - INFLUXDB_URL
+
+## Prototype shopping list
+
+Here's what I have used so far to build this. It's very much a prototype as it doesn't have any casing to protect it from the elements and there's a bunch of bulky cables flopping around which isn't great, but it's a good start...
+
+- PLI
+- RS232 USB interface
+- RS232 cable
+- Raspberry PI
+- Raspberry PI charger and cable
+- Flash drive
+- 6 wire cable or special cable
+- Phone splitter
