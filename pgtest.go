@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -23,10 +24,16 @@ func main() {
 		}
 	}
 
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DATABASE"),
+	)
+
 	// Migration time
-	m, err := migrate.New(
-		"file://migrations",
-		"postgres://postgres@localhost:5432/solar?sslmode=disable")
+	m, err := migrate.New("file://migrations", dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +43,7 @@ func main() {
 	}
 
 	// Open a connection to the postgresql database "solar"
-	db, err := sql.Open("pgx", "postgres://postgres@localhost:5432/solar")
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
