@@ -13,7 +13,7 @@ FROM scratch as solar
 # COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/bin/solar-battery-monitoring /go/bin/solar-battery-monitoring
-COPY migrations /go/bin
+COPY migrations /
 # COPY --from=builder --chown=yinyo:0 /tmp /tmp
 
 CMD ["/go/bin/solar-battery-monitoring"]
