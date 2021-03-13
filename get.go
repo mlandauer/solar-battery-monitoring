@@ -17,9 +17,10 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/mlandauer/solar-battery-monitoring/pkg/pli"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func main() {
+func captureAndRecord() {
 	// Only try to read .env file if it exists
 	_, err := os.Stat(".env")
 	if err == nil {
@@ -177,4 +178,13 @@ func main() {
 		log.Println("Sleeping for ten seconds...")
 		time.Sleep(time.Second * 10)
 	}
+}
+
+func main() {
+	go func() {
+		captureAndRecord()
+	}()
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":2112", nil)
 }
