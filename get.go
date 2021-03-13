@@ -17,6 +17,8 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/joho/godotenv"
 	"github.com/mlandauer/solar-battery-monitoring/pkg/pli"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -146,6 +148,14 @@ func captureAndRecord() {
 
 		t := time.Now()
 
+		measurementTime.SetToCurrentTime()
+		batteryVoltage.Set(float64(v))
+		batteryStateOfCharge.Set(float64(soc))
+		inGauge.Set(float64(in))
+		outGauge.Set(float64(out))
+		chargeGauge.Set(float64(charge))
+		loadGauge.Set(float64(load))
+
 		_, err = influx.Write(
 			context.Background(), os.Getenv("INFLUXDB_BUCKET"), os.Getenv("INFLUXDB_ORG"),
 			influxdb.NewRowMetric(
@@ -179,6 +189,44 @@ func captureAndRecord() {
 		time.Sleep(time.Second * 10)
 	}
 }
+
+var (
+	measurementTime = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "time",
+		Help:      "Time",
+	})
+	batteryVoltage = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "battery_voltage",
+		Help:      "Battery voltage in Volts",
+	})
+	batteryStateOfCharge = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "battery_state_of_charge_percentage",
+		Help:      "Percentage full of the battery",
+	})
+	inGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "in_amp_hours",
+		Help:      "Energy in since midnight measured in Amp Hours",
+	})
+	outGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "out_amp_hours",
+		Help:      "Energy used since midnight measured in Amp Hours",
+	})
+	chargeGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "charge_amps",
+		Help:      "Current generated in Amps",
+	})
+	loadGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "load_amps",
+		Help:      "Current used in Amps",
+	})
+)
 
 func main() {
 	go func() {
