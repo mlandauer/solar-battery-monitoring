@@ -91,6 +91,8 @@ func captureAndRecord() {
 	log.Printf("PL Model name: %v", pli.Model)
 	log.Printf("PL Software version: %v", pli.SoftwareVersion)
 
+	systemVoltage.Set(float64(pli.Voltage))
+
 	// h, m, s, err := pli.CheckTime()
 	// if err != nil {
 	// 	log.Fatal(err)
@@ -225,6 +227,11 @@ var (
 		Subsystem: "solar",
 		Name:      "load_amps",
 		Help:      "Current used in Amps",
+	})
+	systemVoltage = promauto.NewGauge(prometheus.GaugeOpts{
+		Subsystem: "solar",
+		Name:      "system_voltage",
+		Help:      "Voltage that overall system operates at",
 	})
 )
 
