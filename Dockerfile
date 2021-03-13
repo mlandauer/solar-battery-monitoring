@@ -17,3 +17,5 @@ COPY migrations /migrations
 # COPY --from=builder --chown=yinyo:0 /tmp /tmp
 
 CMD ["/go/bin/solar-battery-monitoring"]
+
+EXPOSE 8080
