@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
+	// "database/sql"
+	// "fmt"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
+	// "github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/influxdata/influxdb-client-go"
@@ -44,28 +44,28 @@ func captureAndRecord() {
 	defer influx.Close()
 
 	// Connect to postgres
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_DATABASE"),
-	)
+	// dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+	// 	os.Getenv("POSTGRES_USER"),
+	// 	os.Getenv("POSTGRES_PASSWORD"),
+	// 	os.Getenv("POSTGRES_HOST"),
+	// 	os.Getenv("POSTGRES_PORT"),
+	// 	os.Getenv("POSTGRES_DATABASE"),
+	// )
 
-	m, err := migrate.New("file://migrations", dsn)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
-		log.Fatal(err)
-	}
-
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	// m, err := migrate.New("file://migrations", dsn)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// err = m.Up()
+	// if err != nil && err != migrate.ErrNoChange {
+	// 	log.Fatal(err)
+	// }
+	//
+	// db, err := sql.Open("pgx", dsn)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer db.Close()
 
 	var device string
 	switch runtime.GOOS {
@@ -179,13 +179,13 @@ func captureAndRecord() {
 			log.Fatal(err)
 		}
 
-		_, err = db.Exec(
-			"INSERT INTO measurements (time, battery_voltage, soc, in_value, out_value, charge, load, regulator_state) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-			t, v, soc, in, out, charge, load, state,
-		)
-		if err != nil {
-			log.Fatal(err)
-		}
+		// _, err = db.Exec(
+		// 	"INSERT INTO measurements (time, battery_voltage, soc, in_value, out_value, charge, load, regulator_state) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+		// 	t, v, soc, in, out, charge, load, state,
+		// )
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
 
 		log.Println("Sleeping for ten seconds...")
 		time.Sleep(time.Second * 10)
